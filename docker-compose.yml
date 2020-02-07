@@ -1,0 +1,9 @@
+version: '3'
+services:
+    skin_lesion_app:
+        build: .
+        volumes:
+            - ./:/code
+        ports:
+            - "5000:5000"
+        command: gunicorn -b 0.0.0.0:5000 -k gevent webapp.app:wsgiapp

@@ -3,8 +3,7 @@ import io
 import uuid
 import json
 
-from flask import Flask, jsonify, request, session, g, redirect, url_for, abort, \
-    render_template, flash, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory
 from PIL import Image
 import pandas as pd
 import torch
