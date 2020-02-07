@@ -49,6 +49,15 @@ app.secret_key = str(uuid.uuid4())
 app.debug = False
 wsgiapp = app.wsgi_app
 
+class_name_idx_map = {
+    'akiec': "Actinic keratoses and intraepithelial carcinoma / Bowen's disease",
+    'bcc': "basal cell carcinoma",
+    'bkl': "benign keratosis-like lesions (solar lentigines / seborrheic keratoses and lichen-planus like keratoses)",
+    'df': "dermatofibroma",
+    'mel': "melanoma",
+    'nv': "melanocytic nevi",
+    'vasc': "vascular lesions (angiomas, angiokeratomas, pyogenic granulomas and hemorrhage"
+}
 class_idx_map = get_class_idx_map(os.path.join(
     'data',
     'HAM10000_metadata.csv'
@@ -77,7 +86,9 @@ def get_prediction(img_bytes):
     _, y_hat = output.max(1)
     # pred_idx = str(y_hat.item())
     pred_idx = y_hat.item()
-    predict = {'lesion_type_index': pred_idx, 'lesion_type_id': class_idx_map[pred_idx]}
+    predict = {'lesion_type_index': pred_idx,
+               'lesion_type_id': class_idx_map[pred_idx],
+               'lesion_type_name': class_name_idx_map[class_idx_map[pred_idx]]}
     return predict
 
 
