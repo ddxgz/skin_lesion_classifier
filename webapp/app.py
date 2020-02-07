@@ -77,7 +77,7 @@ def predict():
 
 @app.route('/', methods=['GET'])
 def home():
-    return send_from_directory('templates', 'home.html')
+    return send_from_directory('vuejs', 'home.html')
 
 
 def get_prediction(img_bytes):
