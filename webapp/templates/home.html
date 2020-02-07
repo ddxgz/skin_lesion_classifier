@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Welcome to Vue</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div v-if="!image">
+            <h2>Select an image</h2>
+            <input type="file" @change="onFileChange">
+        </div>
+        <div v-else>
+            <img :src="image" />
+            <button @click="removeImage">Remove image</button>
+        </div>
+
+        <div v-if="info">
+            <h2>The most possible lesion type is: </h2>
+            {{info.lesion_type_id}}
+            {{info.lesion_type_name}}
+        </div>
+    </div>
+
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                image: '',
+                info: null
+            },
+            methods: {
+                onFileChange(e) {
+                    var files = e.target.files || e.dataTransfer.files;
+                    if (!files.length)
+                        return;
+                    this.uploadImage(files[0]);
+                },
+                uploadImage(file) {
+                    var image = new Image();
+                    let formData = new FormData();
+                    formData.append('file', file);
+
+                    axios.post('/predict',
+                        formData,
+                        {
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                        }
+                    ).then(response => (this.info = response.data)
+                    ).catch(function (response) {
+                        alert('fail')
+                    })
+                }
+            }
+        })
+    </script>
+    <style>
+        #app {
+            text-align: center;
+        }
+    </style>
+</body>
+
+</html>

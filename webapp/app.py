@@ -77,7 +77,7 @@ def predict():
 
 @app.route('/', methods=['GET'])
 def home():
-    pass
+    return send_from_directory('templates', 'home.html')
 
 
 def get_prediction(img_bytes):
