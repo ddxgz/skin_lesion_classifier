@@ -5,9 +5,10 @@ import json
 
 from flask import Flask, jsonify, request, session, g, redirect, url_for, abort, \
     render_template, flash, send_from_directory
+from PIL import Image
+import pandas as pd
 import torch
 import torchvision.transforms as transforms
-from PIL import Image
 
 from .densenet import DenseNet
 
@@ -21,7 +22,7 @@ def load_model():
         'models',
         'exp-dense161_eq3_exclutest_lesion_mcc_v1_model_best.pth.tar'),
         map_location=DEVICE
-    ) 
+    )
     from collections import OrderedDict
     new_state_dict = OrderedDict()
     for k, v in checkpoint['net'].items():
@@ -32,11 +33,26 @@ def load_model():
     return net
 
 
+def get_class_idx_map(metadata_path):
+    df = pd.read_csv(metadata_path, index_col='image_id')
+    classes = list(df.groupby('dx')['lesion_id'].nunique().keys())
+    # cls_idx = {}
+    # # for i, cl in enumerate(sorted(classes)):
+    #     cls_idx[i] = cl
+
+    # return cls_idx
+    return classes
+
+
 app = Flask(__name__)
 app.secret_key = str(uuid.uuid4())
 app.debug = False
 wsgiapp = app.wsgi_app
 
+class_idx_map = get_class_idx_map(os.path.join(
+    'data',
+    'HAM10000_metadata.csv'
+))
 model = load_model()
 model.eval()
 
@@ -59,9 +75,10 @@ def get_prediction(img_bytes):
     tensor = transform_img(img_bytes=img_bytes)
     output = model.forward(tensor)
     _, y_hat = output.max(1)
-    pred_idx = str(y_hat.item())
-    # predict = {}
-    return pred_idx
+    # pred_idx = str(y_hat.item())
+    pred_idx = y_hat.item()
+    predict = {'lesion_type_index': pred_idx, 'lesion_type_id': class_idx_map[pred_idx]}
+    return predict
 
 
 def transform_img(img_bytes):
