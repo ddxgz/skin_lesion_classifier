@@ -3,63 +3,107 @@
 
 <head>
     <title>Skin Lesion Classifier</title>
+    <link rel="stylesheet"
+          href="https://unpkg.com/element-ui@2.13.0/lib/theme-chalk/index.css">
+
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/element-ui@2.13.0/lib/index.js"></script>
 </head>
 
 <body>
-    <div id="app">
-        <h3>
-            This is a skin lesion classifier that uses a deep neural network trained on the HAM10000 dataset
-        </h3>
-        <div>
-
-            <form enctype="multipart/form-data" novalidate>
-
-                <h2>Select an image to upload and classify</h2>
+    <el-container>
+        <el-main>
+            <div id="app">
+                <h2>
+                    This is a skin lesion classifier that uses a deep neural network trained on the HAM10000 dataset
+                </h2>
                 <div>
 
-                    <input type="file" accept="image/*" @change="onFileChange">
-                    <!-- <p v-if="isInitial || isSuccess || isFailed">
-                        Drag your file(s) here to begin<br> or click to browse
-                    </p>
-                    <p v-if="isSaving">
-                        Uploading file...
-                    </p> -->
+                    <form enctype="multipart/form-data"
+                          novalidate>
+
+                        <h3>Select an image to upload and classify</h3>
+                        <div>
+
+                            <!-- <input type="file"
+                               accept="image/*"
+                               @change="onFileChange"> -->
+                            <el-upload class="el-demo"
+                                       drag="true"
+                                       multiple="false"
+                                       limit=5
+                                       :thumbnail-mode="true"
+                                       :on-success="showResult"
+                                       :on-error="onError"
+                                       :on-exceed="onExceed"
+                                       action="/predict">
+                                <i class="el-icon-upload"></i>
+                                <div class="el-upload__text">Drag file here，or <em>click to select</em></div>
+                                <div class="el-upload__tip"
+                                     slot="tip">jpg files only with a size less than 500kb</div>
+                            </el-upload>
+                        </div>
+                    </form>
+
                 </div>
-            </form>
+                <p></p>
+                <el-alert title="Warning!"
+                          type="error"
+                          center
+                          :closable="false"
+                          effect="dark"
+                          description="DO NOT take the result seriously, this is just for experimenting and having fun.">
+                </el-alert>
 
-        </div>
-        <p></p>
-        <strong>
-            DO NOT take the result seriously, this is just for experimenting and having fun.
-        </strong>
+                <!-- <el-image style="width: 100px; height: 100px"
+                      :src="image"
+                      fit="contain"></el-image> -->
 
-        <div v-if="isSuccess">
-            <img :src="image" />
-            <h2>The most possible lesion type is: </h2>
-            <p>
-                Lesion type:
-                {{info.lesion_type_id}}
-            </p>
-            <p>
-                Lesion name:
-                {{info.lesion_type_name}}
-            </p>
-        </div>
+                <div v-if="isSuccess">
+                    <!-- <img :src="image" /> -->
+                    <!-- <el-alert title="The most possible lesion type is: "
+                              type="success"
+                              description="这是一句绕口令：黑灰化肥会挥发发灰黑化肥挥发；灰黑化肥会挥发发黑灰化肥发挥。 黑灰化肥会挥发发灰黑化肥黑灰挥发化为灰……">
+                    </el-alert> -->
+                    <h2>The most possible lesion type is: </h2>
+                    <p>
+                        Lesion type:
+                        {{info.lesion_type_id}}
+                    </p>
+                    <p>
+                        Lesion name:
+                        {{info.lesion_type_name}}
+                    </p>
+                </div>
 
-        <div v-if="isFailed">
-            <h2>Upload failed!</h2>
-        </div>
-    </div>
+                <el-alert v-if="isFailed"
+                          center
+                          show-icon="true"
+                          title="Upload failed!"
+                          type="error"
+                          effect="dark">
+                </el-alert>
+                <el-alert v-if="isExceeded"
+                          center
+                          show-icon="true"
+                          title="Upload too many, come again next time please!"
+                          type="warning"
+                          effect="dark">
+                </el-alert>
+            </div>
 
+
+        </el-main>
+
+    </el-container>
     <script type="module">
 
-        const STATUS_INITIAL = 0, STATUS_SAVING = 1, STATUS_SUCCESS = 2, STATUS_FAILED = 3;
+        const STATUS_INITIAL = 0, STATUS_SAVING = 1, STATUS_SUCCESS = 2, STATUS_FAILED = 3, STATUS_EXCEEDED = 4;
         var app = new Vue({
             el: '#app',
             data: {
-                image: '',
+                image: null,
                 info: null,
                 currentStatus: STATUS_INITIAL,
             },
@@ -75,6 +119,9 @@
                 },
                 isFailed() {
                     return this.currentStatus === STATUS_FAILED;
+                },
+                isExceeded() {
+                    return this.currentStatus === STATUS_EXCEEDED;
                 }
             },
             methods: {
@@ -94,6 +141,7 @@
 
                     this.uploadImage(files[0]);
                 },
+                // Deprecated
                 uploadImage(file) {
                     var image = new Image();
                     let formData = new FormData();
@@ -112,6 +160,28 @@
                     ).catch(err => {
                         this.currentStatus = STATUS_FAILED;
                     })
+                },
+                showResult(response, file, fileList) {
+                    this.currentStatus = STATUS_SUCCESS;
+                    this.info = response;
+                },
+                onError(err, file, fileList) {
+                    this.currentStatus = STATUS_FAILED;
+                    alert("Error regarding file: " + file)
+                },
+                showImage(file, fileList) {
+                    console.log(file.name)
+                    console.log(file.url)
+                    // var image = new Image();
+                    // var reader = new FileReader();
+                    // reader.onload = (fileList) => {
+                    //     this.image = e.target.result;
+                    // };
+                    // reader.readAsDataURL();
+                    this.image = file.name;
+                },
+                onExceed(files, fileList) {
+                    this.currentStatus = STATUS_EXCEEDED;
                 }
             }
         })
@@ -120,27 +190,6 @@
     <style>
         #app {
             text-align: center;
-        }
-
-        .box {
-            background-color: white;
-            outline: 2px dashed grey;
-            /* the dash box */
-            outline-offset: -10px;
-        }
-
-        .box__dragndrop {
-            display: inline;
-        }
-
-
-        /* .box:hover {
-            background: lightblue;
-        } */
-
-        .box.is-dragover {
-            background: black;
-            /* when mouse over to the drop zone, change color */
         }
     </style>
 </body>
