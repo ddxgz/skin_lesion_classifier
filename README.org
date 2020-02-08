@@ -1,2 +1,2 @@
 * Skin lesion classification application
-Actually a implementation of the ISIC challenge 2018 task 3. The model is trained on HAM10000 dataset.
+Actually an implementation of the ISIC challenge 2018 task 3. The model is trained on HAM10000 dataset.
