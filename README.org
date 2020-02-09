@@ -1,2 +1,14 @@
 * Skin lesion classification application
 Actually an implementation of the ISIC challenge 2018 task 3. The model is trained on HAM10000 dataset.
+
+Hosted on https://lesion.linkedinfo.co
+
+** TODO
+- [ ] try to avoid downloading pre-trained model while 1st time running
+- [ ] host trained model on cloud object, to reduce container size
+- [ ] restrict non-image file
+- [ ] file size
+- [ ] handle post data
+- [ ] return top-k predictions
+- [ ] handle non-recognition
+- [ ] check ONNX or other ways hosting model 
