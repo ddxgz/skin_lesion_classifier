@@ -3,9 +3,9 @@ from torchvision import models
 
 
 class DenseNet(nn.Module):
-    def __init__(self, num_classes=7, net_choice='densenet161'):
+    def __init__(self, num_classes=7, net_choice='densenet161', pretrained=False):
         super(DenseNet, self).__init__()
-        net = models.densenet161(pretrained=True)
+        net = models.densenet161(pretrained=pretrained)
 
         modules = list(net.children())[:-1]
         self.net = nn.Sequential(*modules)

@@ -4,7 +4,7 @@ Actually an implementation of the ISIC challenge 2018 task 3. The model is train
 Hosted on https://lesion.linkedinfo.co
 
 ** TODO
-- [ ] try to avoid downloading pre-trained model while 1st time running
+- [X] try to avoid downloading pre-trained model while 1st time running
 - [ ] host trained model on cloud object, to reduce container size
 - [ ] restrict non-image file
 - [ ] file size
