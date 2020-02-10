@@ -6,7 +6,7 @@ Hosted on https://lesion.linkedinfo.co
 ** TODO
 - [X] try to avoid downloading pre-trained model while 1st time running
 - [ ] host trained model on cloud object, to reduce container size
-- [ ] restrict non-image file
+- [ ] restrict non-image file upload
 - [ ] file size
 - [ ] handle post data
 - [ ] return top-k predictions
