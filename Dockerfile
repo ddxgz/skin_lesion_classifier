@@ -1,6 +1,6 @@
 # FROM python:3.7-alpine
 # FROM ddxgz/datasci:1.0
-FROM ubuntu:18.04
+FROM ubuntu:19.04
 
 WORKDIR /code
 COPY . /code
