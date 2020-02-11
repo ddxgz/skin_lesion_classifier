@@ -3,6 +3,7 @@ import io
 import uuid
 import json
 
+import requests
 from flask import Flask, jsonify, request, send_from_directory
 from PIL import Image
 import pandas as pd
@@ -11,15 +12,26 @@ import torchvision.transforms as transforms
 
 from .densenet import DenseNet
 
+MODEL_URL = "https://storage.googleapis.com/data-science-258408-skin-lesion-cls-models/models/dense161.pth.tar"
 
-def load_model():
+
+def load_model(model_dir='models', from_url=True):
+    model_file = os.path.join(model_dir, 'model.pth.tar')
+
+    if from_url:
+        if not os.path.exists(model_dir):
+            os.makedirs(model_dir)
+
+        with open(model_file, 'wb') as f:
+            resp = requests.get(MODEL_URL, allow_redirects=True)
+            f.write(resp.content)
+
     DEVICE = torch.device(
         'cuda') if torch.cuda.is_available() else torch.device('cpu')
 
     net = DenseNet(num_classes=7)
-    checkpoint = torch.load(os.path.join(
-        'models',
-        'exp-dense161_eq3_exclutest_lesion_mcc_v1_model_best.pth.tar'),
+    checkpoint = torch.load(
+        model_file,
         map_location=DEVICE
     )
     from collections import OrderedDict

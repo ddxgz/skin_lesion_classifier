@@ -8,3 +8,5 @@ Dockerfile
 README.md
 env.*
 /devops/*
+credentials/
+models/
