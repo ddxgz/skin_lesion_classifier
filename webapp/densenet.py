@@ -3,7 +3,8 @@ from torchvision import models
 
 
 class DenseNet(nn.Module):
-    def __init__(self, num_classes=7, net_choice='densenet161', pretrained=False):
+    def __init__(self, num_classes: int = 7, net_choice: str = 'densenet161',
+                 pretrained: bool = False):
         super(DenseNet, self).__init__()
         net = models.densenet161(pretrained=pretrained)
 

@@ -15,7 +15,7 @@ from .densenet import DenseNet
 MODEL_URL = "https://storage.googleapis.com/data-science-258408-skin-lesion-cls-models/models/dense161.pth.tar"
 
 
-def load_model(model_dir='models', from_url=True):
+def load_model(model_dir: str = 'models', from_url: bool = True):
     model_file = os.path.join(model_dir, 'model.pth.tar')
 
     if from_url:
@@ -44,7 +44,7 @@ def load_model(model_dir='models', from_url=True):
     return net
 
 
-def get_class_idx_map(metadata_path):
+def get_class_idx_map(metadata_path: str):
     df = pd.read_csv(metadata_path, index_col='image_id')
     classes = list(df.groupby('dx')['lesion_id'].nunique().keys())
     # cls_idx = {}
