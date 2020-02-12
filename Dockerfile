@@ -1,6 +1,6 @@
 # FROM python:3.7-alpine
 # FROM ddxgz/datasci:1.0
-FROM ubuntu:19.04
+FROM ubuntu:18.04
 
 WORKDIR /code
 COPY . /code
@@ -15,4 +15,5 @@ COPY requirements.txt requirements.txt
 # RUN python -m pip install -U --force-reinstall pip
 RUN pip3 install -r requirements.txt --no-cache-dir
 # COPY . .
-CMD exec gunicorn -b 0.0.0.0:80 -k gevent webapp.app:wsgiapp
+# CMD exec gunicorn -b 0.0.0.0:80 -k gevent webapp.app:wsgiapp
+ENTRYPOINT gunicorn -b 0.0.0.0:80 -k gevent webapp.app:wsgiapp
