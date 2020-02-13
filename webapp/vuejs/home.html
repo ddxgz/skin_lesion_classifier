@@ -60,21 +60,32 @@
                       :src="image"
                       fit="contain"></el-image> -->
 
+                <el-row>
+                    <p></p>
+                </el-row>
                 <div v-if="isSuccess">
+                    <el-row justify="center"
+                            type="flex">
+                        <el-card class="box-card">
+                            <h2>The most possible lesion type is: </h2>
+                            <div class="text item">
+                                <p>
+                                    Lesion type:
+                                    {{info.lesion_type_id}}
+                                </p>
+                                <p>
+                                    Lesion name:
+                                    {{info.lesion_type_name}}
+                                </p>
+                            </div>
+                        </el-card>
+                    </el-row>
+
                     <!-- <img :src="image" /> -->
                     <!-- <el-alert title="The most possible lesion type is: "
                               type="success"
                               description="这是一句绕口令：黑灰化肥会挥发发灰黑化肥挥发；灰黑化肥会挥发发黑灰化肥发挥。 黑灰化肥会挥发发灰黑化肥黑灰挥发化为灰……">
                     </el-alert> -->
-                    <h2>The most possible lesion type is: </h2>
-                    <p>
-                        Lesion type:
-                        {{info.lesion_type_id}}
-                    </p>
-                    <p>
-                        Lesion name:
-                        {{info.lesion_type_name}}
-                    </p>
                 </div>
 
                 <el-alert v-if="isFailed"
@@ -190,6 +201,18 @@
     <style>
         #app {
             text-align: center;
+        }
+
+        .text {
+            font-size: 20px;
+        }
+
+        .item {
+            padding: 18px 0;
+        }
+
+        .box-card {
+            width: 480px;
         }
     </style>
 </body>
