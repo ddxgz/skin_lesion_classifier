@@ -9,6 +9,7 @@ from PIL import Image
 import pandas as pd
 import torch
 import torchvision.transforms as transforms
+from typing import List, Dict
 
 from .densenet import DenseNet
 
@@ -44,9 +45,9 @@ def load_model(model_dir: str = 'models', from_url: bool = True):
     return net
 
 
-def get_class_idx_map(metadata_path: str):
+def get_class_idx_map(metadata_path: str) -> List[str]:
     df = pd.read_csv(metadata_path, index_col='image_id')
-    classes = list(df.groupby('dx')['lesion_id'].nunique().keys())
+    classes: List[str] = list(df.groupby('dx')['lesion_id'].nunique().keys())
     # cls_idx = {}
     # # for i, cl in enumerate(sorted(classes)):
     #     cls_idx[i] = cl
@@ -60,7 +61,7 @@ app.secret_key = str(uuid.uuid4())
 app.debug = False
 wsgiapp = app.wsgi_app
 
-class_name_idx_map = {
+class_name_idx_map: Dict[str, str] = {
     'akiec': "Actinic keratoses and intraepithelial carcinoma / Bowen's disease",
     'bcc': "basal cell carcinoma",
     'bkl': "benign keratosis-like lesions (solar lentigines / seborrheic keratoses and lichen-planus like keratoses)",
@@ -69,7 +70,7 @@ class_name_idx_map = {
     'nv': "melanocytic nevi",
     'vasc': "vascular lesions (angiomas, angiokeratomas, pyogenic granulomas and hemorrhage"
 }
-class_idx_map = get_class_idx_map(os.path.join(
+class_idx_map: List[str] = get_class_idx_map(os.path.join(
     'data',
     'HAM10000_metadata.csv'
 ))
@@ -80,9 +81,9 @@ model.eval()
 @app.route('/predict', methods=['POST'])
 def predict():
     if request.method == 'POST':
-        file = request.files['file']
-        img_bytes = file.read()
-        pred = get_prediction(img_bytes=img_bytes)
+        img_file = request.files['file']
+        img_bytes = img_file.read()
+        pred: Dict = get_prediction(img_bytes=img_bytes)
         return pred
 
 
@@ -91,19 +92,19 @@ def home():
     return send_from_directory('vuejs', 'home.html')
 
 
-def get_prediction(img_bytes):
+def get_prediction(img_bytes) -> Dict:
     tensor = transform_img(img_bytes=img_bytes)
     output = model.forward(tensor)
     _, y_hat = output.max(1)
     # pred_idx = str(y_hat.item())
-    pred_idx = y_hat.item()
+    pred_idx: int = y_hat.item()
     predict = {'lesion_type_index': pred_idx,
                'lesion_type_id': class_idx_map[pred_idx],
                'lesion_type_name': class_name_idx_map[class_idx_map[pred_idx]]}
     return predict
 
 
-def transform_img(img_bytes):
+def transform_img(img_bytes) -> torch.Tensor:
     img_transforms = transforms.Compose([
         transforms.Resize(224),
         transforms.CenterCrop(224),
