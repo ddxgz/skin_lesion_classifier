@@ -4,7 +4,7 @@ import uuid
 import json
 
 import requests
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory, abort
 from PIL import Image
 import pandas as pd
 import torch
@@ -59,6 +59,8 @@ def get_class_idx_map(metadata_path: str) -> List[str]:
 app = Flask(__name__)
 app.secret_key = str(uuid.uuid4())
 app.debug = False
+app.config['MAX_CONTENT_LENGTH'] = 3 * 1024 * 1024
+SUPPORTED_IMAGE_TYPE: List[str] = ['JPEG', "JPG"]
 wsgiapp = app.wsgi_app
 
 class_name_idx_map: Dict[str, str] = {
@@ -78,10 +80,26 @@ model = load_model()
 model.eval()
 
 
+def supported_image(filename: str) -> bool:
+    if '.' not in filename:
+        return False
+
+    suffix = filename.rsplit('.', 1)[1]
+
+    if suffix.upper() not in SUPPORTED_IMAGE_TYPE:
+        return False
+
+    return True
+
+
 @app.route('/predict', methods=['POST'])
 def predict():
     if request.method == 'POST':
-        img_file = request.files['file']
+        img_file = request.files.get('file')
+        if not img_file:
+            abort(400)
+        if not supported_image(img_file.filename):
+            abort(415)
         img_bytes = img_file.read()
         pred: Dict = get_prediction(img_bytes=img_bytes)
         return pred

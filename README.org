@@ -7,9 +7,10 @@ Hosted on https://lesion.linkedinfo.co
 - [X] try to avoid downloading pre-trained model while 1st time running
 - [X] host trained model on cloud object, to reduce container size
 - [ ] code annotation
-- [ ] restrict non-image file upload
-- [ ] file size
-- [ ] handle post data
+- [X] restrict non-image file upload
+- [X] file size
+- [X] handle post data
+- [ ] more types of image for uploading
 - [ ] return top-k predictions
 - [ ] handle non-recognition
 - [ ] check ONNX or other ways hosting model 

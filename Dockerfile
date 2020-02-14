@@ -15,5 +15,4 @@ COPY requirements.txt requirements.txt
 # RUN python -m pip install -U --force-reinstall pip
 RUN pip3 install -r requirements.txt --no-cache-dir
 # COPY . .
-# CMD exec gunicorn -b 0.0.0.0:80 -k gevent webapp.app:wsgiapp
 ENTRYPOINT gunicorn -b 0.0.0.0:80 -k gevent webapp.app:wsgiapp
