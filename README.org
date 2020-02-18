@@ -11,6 +11,7 @@ Hosted on https://lesion.linkedinfo.co
 - [X] file size
 - [X] handle post data
 - [ ] more types of image for uploading
+- [ ] try to mount the model as a volume to avoid downloading from storage
 - [ ] return top-k predictions
 - [ ] handle non-recognition
 - [ ] check ONNX or other ways hosting model 

@@ -1,13 +1,17 @@
+# This script is used as CLI for run/build/deploy this service
+
 import subprocess
 
 import click
+
 from webapp.app import app
 
-ProjectID = "data-science-258408"
-ImageName = "skin_lesion_app"
-Region = "us-central1"
-ImageBuild = f"gcr.io/{ProjectID}/{ImageName}"
-ServiceName = "skinlesionapp"
+
+PROJECT_ID = "data-science-258408"
+IMAGE_NAME = "skin_lesion_app"
+REGION = "us-central1"
+IMAGE_BUILD = f"gcr.io/{PROJECT_ID}/{IMAGE_NAME}"
+SERVICE_NAME = "skinlesionapp"
 
 
 @click.group()
@@ -21,7 +25,7 @@ def run(local: bool):
     if local:
         app.debug = True
         # app.run(host='0.0.0.0', threaded=True)
-        app.run(host='0.0.0.0:5000')
+        app.run(host='0.0.0.0')
     else:
         run_container()
 
@@ -53,34 +57,36 @@ def deploy():
 
 def run_container():
     print('Running image')
-    subprocess.run(['docker', 'run', '-it', '-p', '5000:80', ImageBuild])
+    subprocess.run(['docker', 'run', '-it', '-p', '5000:80', IMAGE_BUILD])
 
 
 def build_local():
     print('Building image locally')
-    subprocess.run(['docker', 'build', '--tag', ImageBuild, '.'])
+    subprocess.run(['docker', 'build', '--tag', IMAGE_BUILD, '.'])
 
 
 def build_gcloud():
     print('Building image in Google Cloud Build')
     subprocess.run(['gcloud', 'builds', 'submit',
-                    '--tag', ImageBuild])
+                    '--tag', IMAGE_BUILD])
 
 
 def deploy_gcloud():
     print('Deploying image')
-    subprocess.run(['docker', 'push', ImageBuild])
+    subprocess.run(['docker', 'push', IMAGE_BUILD])
     subprocess.run(['gcloud', 'run', 'deploy',
-                    ServiceName, '--platform', 'managed', '--region', Region, '--image', ImageBuild])
+                    SERVICE_NAME, '--platform', 'managed', '--region', REGION, '--image', IMAGE_BUILD])
 
-# ModelPath="models/exp-dense161_eq3_exclutest_lesion_mcc_v1_model_best.pth.tar"
-# Bucket="data-science-258408-skin-lesion-cls-models"
-# ModelCloud="models/dense161.pth.tar"
+
+# MODEL_PATH = "models"
+# BUCKET = "data-science-258408-skin-lesion-cls-models"
+# MODEL_CLOUD = "models/dense161.pth.tar"
 #
-# gsutil cp $ModelPath gs://$Bucket/$ModelCloud
+# # gsutil cp $ModelPath gs://$Bucket/$ModelCloud
 # # https://storage.cloud.google.com/data-science-258408-skin-lesion-cls-models/models/dense161.pth.tar
 # @cli.command()
-# def upload():
+# @click.argument('model', type=click.Path(exists=True))
+# def upload(model: str):
 #     pass
 
 

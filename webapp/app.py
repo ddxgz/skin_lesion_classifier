@@ -13,6 +13,7 @@ from typing import List, Dict
 
 from .densenet import DenseNet
 
+# TODO
 MODEL_URL = "https://storage.googleapis.com/data-science-258408-skin-lesion-cls-models/models/dense161.pth.tar"
 
 
@@ -58,7 +59,7 @@ def get_class_idx_map(metadata_path: str) -> List[str]:
 
 app = Flask(__name__)
 app.secret_key = str(uuid.uuid4())
-app.debug = False
+app.debug = True
 app.config['MAX_CONTENT_LENGTH'] = 3 * 1024 * 1024
 SUPPORTED_IMAGE_TYPE: List[str] = ['JPEG', "JPG"]
 wsgiapp = app.wsgi_app
@@ -76,8 +77,16 @@ class_idx_map: List[str] = get_class_idx_map(os.path.join(
     'data',
     'HAM10000_metadata.csv'
 ))
-model = load_model()
+
+# avoid down model when in debug
+from_url: bool = True
+if app.debug:
+    from_url = False
+
+model = load_model(from_url=from_url)
 model.eval()
+# avoid forcely set to True when import this module
+app.debug = False
 
 
 def supported_image(filename: str) -> bool:
