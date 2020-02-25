@@ -12,6 +12,8 @@ IMAGE_NAME = "skin_lesion_app"
 REGION = "us-central1"
 IMAGE_BUILD = f"gcr.io/{PROJECT_ID}/{IMAGE_NAME}"
 SERVICE_NAME = "skinlesionapp"
+MEM_SIZE = '1024'
+CLOUD_PORT = '80'
 
 
 @click.group()
@@ -75,7 +77,9 @@ def deploy_gcloud():
     print('Deploying image')
     subprocess.run(['docker', 'push', IMAGE_BUILD])
     subprocess.run(['gcloud', 'run', 'deploy',
-                    SERVICE_NAME, '--platform', 'managed', '--region', REGION, '--image', IMAGE_BUILD])
+                    SERVICE_NAME, '--platform', 'managed', '--region', REGION,
+                    '--image', IMAGE_BUILD, '--memory', MEM_SIZE, '--port',
+                    CLOUD_PORT])
 
 
 # MODEL_PATH = "models"
